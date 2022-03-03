@@ -48,11 +48,15 @@ import (
 	"fmt"
 	"os"
 	"strings"
+	"time"
 )
 
 func main() {
 
 	var fw *os.File
+
+	t := time.Now()
+	fmt.Println("Started: " + t.String())
 
 	f, err := os.Open("SP.xml")
 	if err != nil {
@@ -66,10 +70,10 @@ func main() {
 		// fw, _ = os.OpenFile(filename, os.O_APPEND, 0666) // Открыть файл
 		os.Remove(filename)
 		fw, _ = os.Create(filename) // Создать файл
-		fmt.Println("Файл существует")
+		fmt.Println("Файл пересоздан")
 	} else {
 		fw, _ = os.Create(filename) // Создать файл
-		fmt.Println("Файл не существует")
+		fmt.Println("Файл создан")
 	}
 
 	fl := false
@@ -78,6 +82,10 @@ func main() {
 	sc := bufio.NewScanner(f)
 
 	w := bufio.NewWriter(fw) // Создаем новый объект Writer
+
+	_, _ = w.WriteString(" <?xml version=\"1.0\" encoding=\"UTF-8\"?>\n")
+	_, _ = w.WriteString(" <V8Exch:_1CV8DtUD xmlns:V8Exch=\"http://www.1c.ru/V8/1CV8DtUD/\" xmlns:v8=\"http://v8.1c.ru/data\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">\n")
+	_, _ = w.WriteString(" 	<V8Exch:Data>\n")
 
 	for sc.Scan() {
 		if strings.Contains(sc.Text(), "<InformationRegisterRecordSet.СреднееПотребление>") {
@@ -99,7 +107,15 @@ func main() {
 
 	}
 
+	_, _ = w.WriteString(" 	</V8Exch:Data>\n")
+	_, _ = w.WriteString(" </V8Exch:_1CV8DtUD>\n")
+
 	w.Flush()
+
+	fw.Close()
+
+	t = time.Now()
+	fmt.Println("Stopped: " + t.Format("2006-01-02 15:04:05"))
 }
 
 func checkFileIsExist(filename string) bool {
