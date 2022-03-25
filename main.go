@@ -13,10 +13,10 @@ func main() {
 
 	var fw *os.File
 	const line_count = 10000000 //Размер файла (строк)
-	const StartTag = "<InformationRegisterRecordSet.СреднееПотребление>"
-	const StopTag = "</InformationRegisterRecordSet.СреднееПотребление>"
-	const sourcename = "SP.xml"
-	const filename = "sp_out"
+	const StartTag = "<InformationRegisterRecordSet.СиловыеТрансформаторыНаТочках>"
+	const StopTag = "</InformationRegisterRecordSet.СиловыеТрансформаторыНаТочках>"
+	const sourcename = "rs.xml"
+	const filename = "rs_pwr"
 
 	t := time.Now()
 	fmt.Println("Started: " + t.Format("2006-01-02 15:04:05"))
@@ -43,6 +43,8 @@ func main() {
 
 	// Чтение файла с ридером
 	sc := bufio.NewScanner(f)
+	buf := make([]byte, 0, 64*1024)
+	sc.Buffer(buf, 1024*1024) //set buffer max size
 
 	w := bufio.NewWriter(fw) // Создаем новый объект Writer
 
